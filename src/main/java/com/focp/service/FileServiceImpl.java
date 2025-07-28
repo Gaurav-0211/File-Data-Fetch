@@ -1,0 +1,56 @@
+package com.focp.service;
+
+import com.focp.config.ResourceNotFoundException;
+import com.focp.dto.FileDto;
+import com.focp.entity.FileEntity;
+import com.focp.repo.FileRepo;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+@Service
+public class FileServiceImpl implements FileService{
+    @Autowired
+    private FileRepo fileRepo;
+    @Autowired
+    private ModelMapper mapper;
+    @Override
+    public String uploadFile(String path, MultipartFile file) throws IOException {
+        String name  = file.getOriginalFilename();
+        String randomId = UUID.randomUUID().toString();
+
+        String fileName1 = randomId.concat(name.substring(name.lastIndexOf(".")));
+
+        String filePath = path + File.separator+ fileName1;
+
+        File f = new File(path);
+
+        if(!f.exists()){
+            f.mkdirs();
+        }
+
+        Files.copy(file.getInputStream(), Paths.get(filePath));
+        return fileName1;
+    }
+
+    @Override
+    public InputStream getResource(String path, String fileName) throws FileNotFoundException {
+        String fullPath = path + File.separator +fileName;
+
+        InputStream is = new FileInputStream(fullPath);
+        return is;
+    }
+
+    @Override
+    public FileDto getFileById(Integer fileId) {
+        FileEntity file = this.fileRepo.findById(fileId)
+                .orElseThrow(()->new ResourceNotFoundException("File", "file Id", fileId));
+        return this.mapper.map(file , FileDto.class);
+    }
+}

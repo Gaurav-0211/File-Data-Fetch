@@ -1,9 +1,4 @@
 package com.focp.service;
-
-import com.focp.config.ResourceNotFoundException;
-import com.focp.dto.FileDto;
-import com.focp.entity.FileEntity;
-import com.focp.repo.FileRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +11,7 @@ import java.util.UUID;
 
 @Service
 public class FileServiceImpl implements FileService{
-    @Autowired
-    private FileRepo fileRepo;
-    @Autowired
-    private ModelMapper mapper;
+
     @Override
     public String uploadFile(String path, MultipartFile file) throws IOException {
         String name  = file.getOriginalFilename();
@@ -47,10 +39,4 @@ public class FileServiceImpl implements FileService{
         return is;
     }
 
-    @Override
-    public FileDto getFileById(Integer fileId) {
-        FileEntity file = this.fileRepo.findById(fileId)
-                .orElseThrow(()->new ResourceNotFoundException("File", "file Id", fileId));
-        return this.mapper.map(file , FileDto.class);
-    }
 }

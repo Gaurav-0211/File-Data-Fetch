@@ -3,6 +3,7 @@ import com.focp.Repo.FileRepo;
 import com.focp.config.ResourceNotFoundException;
 import com.focp.dto.FileDto;
 import com.focp.entity.FileEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class FileServiceImpl implements FileService{
     @Autowired
@@ -41,6 +43,7 @@ public class FileServiceImpl implements FileService{
         fileEntity.setFileName(newFileName);
         fileEntity.setData(file.getBytes());
         FileEntity savedEntity = this.fileRepo.save(fileEntity);
+        log.info("File saved successfully to the db");
         FileDto savedDto = this.mapper.map(fileEntity, FileDto.class);
 
         return "File saved with ID: " + savedDto.getId();
@@ -51,6 +54,7 @@ public class FileServiceImpl implements FileService{
     public byte[] downloadFile(Long fileId) throws IOException {
         FileEntity file = fileRepo.findById(fileId)
                 .orElseThrow(() -> new ResourceNotFoundException("File ", "File Id",fileId));
+        log.info("Id fetched and file ready for download");
         return  file.getData();
     }
 

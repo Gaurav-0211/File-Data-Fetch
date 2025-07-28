@@ -27,7 +27,14 @@ public class FileController {
     public ResponseEntity<String> uploadFile(@RequestParam MultipartFile file) throws IOException {
         if(file.isEmpty()){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Request must contain a file");
-        }else {
+        }
+        if(!file.getContentType().equals("pdf/xlsx")){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Only PDF and Excel file type allowed");
+        }
+        else if (file.getSize() < 40 * 1024) {
+            return ResponseEntity.badRequest().body("File is too small. Minimum size is 40KB");
+        }
+        else {
             String fileName = this.fileService.uploadFile(path, file);
             return ResponseEntity.ok("File uploaded Successfully" + fileName);
         }

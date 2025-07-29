@@ -37,7 +37,7 @@ public class FileController {
             log.info("File is not in the same format");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Only PDF and Excel file type allowed");
         }
-        else if (file.getSize() < 40 * 1024) {
+        else if (file.getSize() < 15 * 1024) {
             log.info("File is not align within the given size");
             return ResponseEntity.badRequest().body("File is too small. Minimum size is 40KB");
         }
